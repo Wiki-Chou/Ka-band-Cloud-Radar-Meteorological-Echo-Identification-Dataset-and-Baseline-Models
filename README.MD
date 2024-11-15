@@ -99,9 +99,9 @@ This project is a deep learning project for meteorological radar echo recognitio
 
 **Fig. 1** Comparison of clear-air echo identification capability under complex weather conditions: (a) simple case 1; (b) simple case 2; (c) drizzle; (d) rain; (e) low cloud.
 
-## Contribution
+## Connection
 
-Feel free to submit issues and pull requests to improve this project.
+Weijie Zou 2016301610343@whu.edu.cn
 
 ## License
 
