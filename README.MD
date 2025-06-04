@@ -85,13 +85,16 @@ This project is a deep learning project for meteorological radar echo recognitio
 
 ### Accuracy Table
 
-| Model        | mIOU   | Dice   | Precision | Recall | F1     | Time(s) | GPU Time(s) |
-|--------------|--------|--------|-----------|--------|--------|---------|-------------|
-| FL           | 0.7411 | 0.8211 | 0.8005    | 0.8667 | 0.8211 | 10.4643 |             |
-| BP           | 0.7618 | 0.8322 | 0.9037    | 0.7982 | 0.8322 | 19.6090 |             |
-| Unet         | 0.9668 | 0.9827 | 0.9793    | 0.9862 | 0.9827 | 5.3555  | 0.4815      |
-| TransUnet    | 0.8734 | 0.9271 | 0.8970    | 0.9640 | 0.9271 | 11.2552 | 0.5297      |
-| Unet+SE      | 0.9688 | 0.9838 | 0.9853    | 0.9822 | 0.9838 | 5.5242  | 0.5022      |
+
+
+| Model     | mIoU  | Dice  | Precision | Recall | F1    | Time(s) | GPU Time(s) |
+|-----------|-------|-------|-----------|--------|-------|---------|-------------|
+| FL        | 0.727 | 0.793 | 0.882     | 0.762  | 0.793 | 17.393  | —           |
+| BP        | 0.718 | 0.794 | 0.840     | 0.765  | 0.794 | 16.740  | —           |
+| UNet      | 0.956 | 0.977 | 0.974     | 0.979  | 0.977 | 4.671   | 0.560       |
+| TransUNet | 0.900 | 0.944 | 0.917     | 0.976  | 0.944 | 12.989  | 0.430       |
+| UNet+SE   | 0.956 | 0.977 | 0.972     | 0.982  | 0.978 | 4.408   | 0.568       |
+
 
 ### Image Description
 
@@ -99,9 +102,47 @@ This project is a deep learning project for meteorological radar echo recognitio
 
 **Fig. 1** Comparison of clear-air echo identification capability under complex weather conditions: (a) simple case 1; (b) simple case 2; (c) drizzle; (d) rain; (e) low cloud.
 
+## Dataset Access
+
+The dataset used in this project is publicly available on **Zenodo** under the same name:
+
+> 📂 **Zenodo Dataset Repository**  
+> 🔗 [https://zenodo.org/records/15591468](https://zenodo.org/records/15591468) 
+> 📄 DOI: [10.5281/zenodo.15591468](https://doi.org/10.5281/zenodo.15591468)
+
+The dataset includes:
+- Ka-band cloud radar raw reflectivity observations
+- Annotated clear-air echo masks for multiple weather conditions
+- Case descriptions and visualization examples
+- README and license file
+
+The dataset is provided under the **CC BY 4.0 License**, allowing reuse with proper attribution.
+
+##  Related Publication
+
+This repository is associated with the following peer-reviewed publication:
+
+> **Zou, W., Yin, L., & Li, A.** (2025). *Ka-band Cloud Radar Meteorological Echo Dataset with Complex Weather Coverage: Baseline Models for Deep Learning Applications*.  
+> **IEEE Transactions on Geoscience and Remote Sensing (TGRS)**.  
+
+Please cite this paper if you use the dataset or models provided in this repository.
+
+### Citation (BibTeX)
+
+```bibtex
+@article{zou2025ka,
+  author    = {Zou, Weijie and Yin, Li and Li, Abbe},
+  title     = {Ka-band Cloud Radar Meteorological Echo Dataset with Complex Weather Coverage: Baseline Models for Deep Learning Applications},
+  journal   = {IEEE Transactions on Geoscience and Remote Sensing},
+  year      = {2025}
+}
+
+
 ## Connection
 
 Weijie Zou 2016301610343@whu.edu.cn
+
+
 
 ## License
 

@@ -162,7 +162,7 @@ def get_args():
     parser.add_argument('-u', '--unet_type', dest='unet_type', type=str, default='se', help='UNet type (v1/v2/v3)')
     parser.add_argument('-e', '--epochs', type=int, default=50, help='Number of epochs')
     parser.add_argument('-b', '--batch-size', type=int, default=4, help='Batch size')
-    parser.add_argument('-l', '--learning-rate', type=float, default=0.00001, help='Learning rate')
+    parser.add_argument('-l', '--learning-rate', type=float, default=0.00005, help='Learning rate')
     parser.add_argument('-f', '--load', type=str, default=False, help='Load model from a .pth file')
     parser.add_argument('-s', '--scale', type=float, default=1, help='Downscaling factor of the images')
     return parser.parse_args()
@@ -182,7 +182,7 @@ if __name__ == '__main__':
     elif args.unet_type == '3d':
         net = UNet3D(in_channels=4, out_channels=1)
     elif args.unet_type == 'trans':
-        net = TransUNet(img_dim=400, in_channels=4, out_channels=128, head_num=4, mlp_dim=512, block_num=8, patch_dim=16, class_num=1)
+        net = TransUNet(img_dim=256, in_channels=4, out_channels=128, head_num=4, mlp_dim=512, block_num=8, patch_dim=16, class_num=1)
     elif args.unet_type == 'se':
         net = UNetWithSE(n_channels=4, n_classes=1)
     else:

@@ -44,8 +44,8 @@ def predict_img(unet_type, net, full_img, device, scale_factor=1, out_threshold=
     img = np.array(full_img, dtype=np.float32)
 
     # Handle NaN and inf values
-    img[np.isnan(img)] = -99
-    img[np.isinf(img)] = -99
+    img[np.isnan(img)] = -999
+    img[np.isinf(img)] = -999
 
     # Preprocess the image
     img = torch.from_numpy(BasicDataset.preprocess(unet_type, img, scale_factor))
@@ -78,7 +78,7 @@ def slide_window_predict(unet_type, net, full_img, device, scale_factor=1, out_t
     Returns:
     - np.ndarray: Binary mask for the entire image.
     """
-    windows_size = 400
+    windows_size = 256
     stride = 100
     num_w = (full_img.shape[0] - windows_size) // stride + 1
     num_h = 1  # For simplicity, using 1 horizontal window, adjust as needed
@@ -128,8 +128,8 @@ def get_args():
     parser = argparse.ArgumentParser(description='Predict masks from input images', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('--gpu_id', '-g', type=int, default=0, help='GPU ID')
     parser.add_argument('--unet_type', '-u', default='se', help='U-Net model type (v1/v2/v3/trans/se)')
-    parser.add_argument('--input', '-i', default=[r'F:\Workspace\Projects\气象局技能大赛\基于机器学习的晴空回波识别\Data_test\imgs'], nargs='+', help='Input image file paths')
-    parser.add_argument('--mask', '-m', default=[r'F:\Workspace\Projects\气象局技能大赛\基于机器学习的晴空回波识别\Data_test\masks'], nargs='+', help='Input mask file paths')
+    parser.add_argument('--input', '-i', default=[r'Data_test\imgs'], nargs='+', help='Input image file paths')
+    parser.add_argument('--mask', '-m', default=[r'Data_test\masks'], nargs='+', help='Input mask file paths')
     parser.add_argument('--output', '-o', default=[r'output'], nargs='+', help='Output directories for results')
     parser.add_argument('--mask-threshold', '-t', type=float, default=0.5, help='Threshold for mask prediction')
     parser.add_argument('--scale', '-s', type=float, default=1, help='Scale factor for input images')
@@ -165,7 +165,7 @@ def predict_met_echo(in_files, fn, output_dir, unet_type, net, scale_factor, out
         radar_depomask = img[:, :, 3]
 
         # Predict mask based on image size
-        if img.shape == (400, 400, 4):
+        if img.shape == (256, 256, 4):
             mask = predict_img(unet_type, net, img, scale_factor=scale_factor, out_threshold=out_threshold, device=device)
         else:
             mask = slide_window_predict(unet_type, net, img, scale_factor=scale_factor, out_threshold=out_threshold, device=device)
@@ -190,11 +190,11 @@ if __name__ == '__main__':
 
     # Load the model based on U-Net type
     if args.unet_type == 'trans':
-        net = TransUNet(img_dim=400, in_channels=4, out_channels=128, head_num=4, mlp_dim=512, block_num=8, patch_dim=16, class_num=1)
+        net = TransUNet(img_dim=256, in_channels=4, out_channels=128, head_num=4, mlp_dim=512, block_num=8, patch_dim=16, class_num=1)
         args.model = r'model\TransUnet\CP_epoch60_miou_0.8984.pth'
     elif args.unet_type == 'se':
         net = UNetWithSE(n_channels=4, n_classes=1)
-        args.model = r'model\UnetSE_LDR_randomDROP\CP_epoch60_miou_0.9799.pth'
+        args.model = r'model\UnetSE_LDR_randomDROP\CP_epoch60_miou_0.956.pth'
     else:
         net = UNet(n_channels=4, n_classes=1)
         args.model = r'model\Unet\CP_epoch60_miou_0.9766.pth'
