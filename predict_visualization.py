@@ -20,7 +20,7 @@ import torch
 import torch.nn.functional as F
 from PIL import Image
 from torchvision import transforms
-from unet import UNet, UNet2Plus, UNet3Plus, TransUNet, UNetWithSE
+from unet import UNet,TransUNet, UNetWithSE
 from utils.dataset import BasicDataset
 from utils.eval import calculate_iou
 from utils.data_vis import plot_img_and_mask, plot_imgs, plot_mask, Visualize_type
@@ -179,7 +179,7 @@ def predict_met_echo(in_files, fn, output_dir, unet_type, net, scale_factor, out
         echo_mask[:, 150:][echo_mask[:, 150:] == 1] = 2  # Post-process for higher altitudes
 
         # Save the prediction mask as a .npy file
-        np.save(os.path.join(output_dir, fn), echo_mask)
+        #np.save(os.path.join(output_dir, fn), echo_mask)
 
         return echo_mask, range(len(img)), img
 
