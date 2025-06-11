@@ -117,6 +117,69 @@ def slide_window_predict(unet_type, net, full_img, device, scale_factor=1, out_t
     mask[:, 150:][full_img[:, 150:, 2] >= 0] = True
 
     return mask
+def pad_and_predict_by_fold_reflection(unet_type, net, full_img, device, scale_factor=1, out_threshold=0.9, target_size=400):
+    """
+    Pad the image using alternating vertical reflection to reach the target size, then perform prediction.
+    This function is designed for input images with insufficient height or time dimension.
+
+    Args:
+        unet_type (str): Type of the UNet model.
+        net (torch.nn.Module): Trained UNet model.
+        full_img (np.ndarray): Input image of shape (H, W, C).
+        device (torch.device): Computation device (CPU or GPU).
+        scale_factor (float): Image scaling factor.
+        out_threshold (float): Threshold for binary mask generation.
+        target_size (int): Desired size along the vertical (first) dimension (default: 400).
+
+    Returns:
+        np.ndarray: Binary mask with the same spatial dimensions as the original input image.
+    """
+    H, W, C = full_img.shape
+    num_fold = target_size // H
+    remainder = target_size % H
+
+    flipped_img = np.flip(full_img, axis=0)
+    padded_img = np.zeros((target_size, W, C))
+
+    # Alternating reflection padding
+    for i in range(num_fold):
+        start = i * H
+        if i % 2 == 0:
+            padded_img[start:start + H, :, :] = full_img[:target_size - start, :, :]
+        else:
+            padded_img[start:start + H, :, :] = flipped_img[:target_size - start, :, :]
+
+    if remainder > 0:
+        start = num_fold * H
+        if num_fold % 2 == 0:
+            padded_img[start:, :, :] = full_img[:remainder, :, :]
+        else:
+            padded_img[start:, :, :] = flipped_img[:remainder, :, :]
+
+    # Crop width if it exceeds the target size
+    padded_img = padded_img[:, :target_size, :]
+
+    # Predict on the padded image
+    mask_padded = predict_img(unet_type, net, padded_img, device, scale_factor, out_threshold)
+
+    # Average overlapping predictions to reconstruct the original size mask
+    averaged_mask = np.zeros((H, W))
+    for i in range(num_fold):
+        start = i * H
+        segment = mask_padded[start:start + H, :]
+        if i % 2 == 1:
+            segment = np.flip(segment, axis=0)
+        averaged_mask += segment[:H, :]
+
+    if remainder > 0:
+        start = num_fold * H
+        segment = mask_padded[start:start + remainder, :]
+        if num_fold % 2 == 1:
+            segment = np.flip(segment, axis=0)
+        averaged_mask[:remainder, :] += segment
+
+    averaged_mask /= num_fold + (1 if remainder > 0 else 0)
+    return averaged_mask > out_threshold
 
 
 def get_args():
@@ -165,6 +228,9 @@ def predict_met_echo(in_files, fn, output_dir, unet_type, net, scale_factor, out
         radar_depomask = img[:, :, 3]
 
         # Predict mask based on image size
+        if img.shape[0] < 256:
+            mask = pad_and_predict_by_fold_reflection(unet_type, net, img, device, scale_factor, out_threshold, target_size=256)
+
         if img.shape == (256, 256, 4):
             mask = predict_img(unet_type, net, img, scale_factor=scale_factor, out_threshold=out_threshold, device=device)
         else:
